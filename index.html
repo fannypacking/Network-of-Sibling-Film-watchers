@@ -2,194 +2,173 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASA // SIBLING_FILM_LINK</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NASA // SIBLING_LINK</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.js"></script>
     <style>
-        :root {
-            --nasa-red: #fc3d21;
-            --nasa-blue: #0b3d91;
-            --terminal-green: #00ff41;
-            --analog-grey: #c0c0c0;
-        }
+        :root { --nasa-red: #fc3d21; --nasa-blue: #0b3d91; --terminal-green: #00ff41; --analog-grey: #c0c0c0; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #000; color: var(--terminal-green); font-family: 'Courier New', monospace; margin: 0; padding: 10px; }
+        
+        /* CRT overlay - pointer-events: none is critical! */
+        .crt { position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+               background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%); 
+               background-size: 100% 4px; z-index: 10; pointer-events: none; opacity: 0.2; }
 
-        body {
-            background-color: #000;
-            color: var(--terminal-green);
-            font-family: 'Courier New', monospace;
-            margin: 0; padding: 10px;
-            display: flex; flex-direction: column; align-items: center;
-        }
-
-        /* CRT EFFECT */
-        body::before {
-            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 4px; z-index: 999; pointer-events: none;
-        }
-
-        .terminal {
-            width: 100%; max-width: 450px;
-            border: 4px solid var(--analog-grey);
-            background: #111; padding: 15px;
-            box-shadow: inset 0 0 20px #000, 0 0 15px var(--nasa-blue);
-        }
-
+        .terminal { width: 100%; max-width: 450px; border: 4px solid var(--analog-grey); 
+                    background: #111; padding: 15px; margin: auto; position: relative; z-index: 1; }
+        
         .header { text-align: center; border-bottom: 2px solid var(--nasa-red); margin-bottom: 20px; }
-        .header h1 { font-size: 1.2rem; margin: 5px; letter-spacing: 2px; }
-
-        /* NAV BUTTONS */
+        
         .nav-deck { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .nav-btn {
-            background: var(--analog-grey); color: #000; border: 3px outset #fff;
-            padding: 10px; font-weight: bold; cursor: pointer; text-align: center;
-        }
-        .nav-btn:active { border-style: inset; background: #999; }
+        
+        /* Tactical Buttons */
+        button { background: var(--analog-grey); color: #000; border: 3px outset #fff; 
+                 padding: 12px; font-weight: bold; cursor: pointer; font-family: inherit; font-size: 0.8rem; }
+        button:active { border-style: inset; background: #999; }
 
-        /* BOX ART */
-        .poster-frame {
-            width: 160px; height: 230px; border: 3px double var(--terminal-green);
-            margin: 15px auto; background-size: cover; background-position: center;
-        }
+        input, select { width: 100%; background: #000; color: var(--terminal-green); 
+                        border: 1px solid var(--terminal-green); padding: 10px; margin: 8px 0; }
 
-        .input-group { margin-bottom: 15px; }
-        input, select { 
-            width: 100%; background: #000; color: var(--terminal-green); 
-            border: 1px solid var(--terminal-green); padding: 8px; font-family: inherit;
-        }
-
-        .hidden { display: none; }
-        .loading-shimmer { animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
+        .hidden { display: none !important; }
+        .poster-frame { width: 160px; height: 230px; border: 3px double var(--terminal-green); margin: 15px auto; background-size: cover; }
     </style>
 </head>
 <body>
 
+<div class="crt"></div>
+
 <div class="terminal">
     <div class="header">
-        <h1>NSFW // MISSION_CONTROL</h1>
-        <p style="font-size: 0.6rem; color: var(--nasa-red);">STATION ID: SIBLING_LINK_4</p>
+        <h1>NASA // MISSION_CONTROL</h1>
+        <p style="font-size: 0.6rem; color: var(--nasa-red);">LINK_STATUS: ONLINE</p>
     </div>
 
-    <div id="screen-theater">
-        <div id="theater-data">
-            <p class="loading-shimmer">CONNECTING TO SATELLITE...</p>
+    <div id="pg-theater">
+        <div id="theater-content">
+            <p style="text-align: center;">> SCANNING SATELLITE FEED...</p>
         </div>
     </div>
 
-    <div id="screen-submit" class="hidden">
-        <h2 style="font-size: 0.9rem;">> INITIALIZE_TAPE_LOAD</h2>
-        <div class="input-group">
-            <label>FILM TITLE:</label>
-            <input type="text" id="m-title">
-        </div>
-        <div class="input-group">
-            <label>SIBLING ID:</label>
-            <select id="m-picker">
-                <option value="Sibling 1">SIBLING 1</option>
-                <option value="Sibling 2">SIBLING 2</option>
-                <option value="Sibling 3">SIBLING 3</option>
-                <option value="Sibling 4">SIBLING 4</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>BOX ART (PHOTO):</label>
-            <input type="file" id="m-img" accept="image/*">
-        </div>
-        <button class="nav-btn" style="width:100%; background:var(--nasa-red); color:white;" onclick="uploadMovie()">LOCK IN DATA</button>
+    <div id="pg-upload" class="hidden">
+        <h2 style="font-size: 0.8rem;">> UPLOAD_TAPE_MODULE</h2>
+        <input type="text" id="m-title" placeholder="FILM_TITLE">
+        <select id="m-picker">
+            <option>SIBLING 1</option><option>SIBLING 2</option>
+            <option>SIBLING 3</option><option>SIBLING 4</option>
+        </select>
+        <p style="font-size: 0.6rem;">[SELECT_IMAGE_FILE]</p>
+        <input type="file" id="m-img" accept="image/*">
+        <button onclick="uploadMovie()" style="width: 100%; background: var(--nasa-red); color: white;">LOCK_IN</button>
     </div>
 
     <div class="nav-deck">
-        <div class="nav-btn" onclick="showScreen('screen-theater')">VIEW<br>COMMMS</div>
-        <div class="nav-btn" onclick="showScreen('screen-submit')">LOAD<br>DATA</div>
+        <button onclick="go('pg-theater')">VIEW<br>COMMMS</button>
+        <button onclick="go('pg-upload')">LOAD<br>DATA</button>
     </div>
 </div>
 
 <script>
+    // 1. HARD-CODED SUPABASE CONNECTION
     const SB_URL = "https://vzwcarzsrbgrjrqoflbh.supabase.co";
     const SB_KEY = "sb_publishable_KY4Pldcx5bnPKuOgLWg3wA_7IiGzChd";
-    const supabase = window.supabase.createClient(SB_URL, SB_KEY);
-
-    function showScreen(id) {
-        document.getElementById('screen-theater').classList.add('hidden');
-        document.getElementById('screen-submit').classList.add('hidden');
-        document.getElementById(id).classList.remove('hidden');
-        if(id === 'screen-theater') loadWeekData();
+    
+    // Check if library loaded, then init
+    let supabase;
+    try {
+        supabase = window.supabase.createClient(SB_URL, SB_KEY);
+        console.log("Supabase Online");
+    } catch (e) {
+        alert("CRITICAL ERROR: Supabase Library Not Loaded");
     }
 
-    async function loadWeekData() {
-        const target = document.getElementById('theater-data');
+    // 2. DIRECT NAVIGATION (No fancy logic, just show/hide)
+    function go(pageId) {
+        console.log("Switching to:", pageId);
         
-        // 1. Check for selected movie
-        const { data: selected } = await supabase.from('movies').select('*').eq('status', 'selected').single();
+        // Hide all
+        document.getElementById('pg-theater').classList.add('hidden');
+        document.getElementById('pg-upload').classList.add('hidden');
+        
+        // Show target
+        document.getElementById(pageId).classList.remove('hidden');
 
-        if (selected) {
+        if(pageId === 'pg-theater') refresh();
+    }
+
+    // 3. REFRESH DATA
+    async function refresh() {
+        const target = document.getElementById('theater-content');
+        
+        const { data: movies } = await supabase.from('movies').select('*');
+        const active = movies.find(m => m.status === 'selected');
+
+        if (active) {
             target.innerHTML = `
-                <p style="text-align:center; color:var(--nasa-red)">CURRENT MISSION:</p>
-                <div class="poster-frame" style="background-image:url(${selected.poster_url})"></div>
-                <h2 style="text-align:center">${selected.title}</h2>
-                <p style="text-align:center; font-size:0.7rem">PICKED BY: ${selected.picker}</p>
-                <hr border="1">
-                <p style="font-size:0.7rem">LOG SIBLING RATING (1-5):</p>
-                <div style="display:flex; gap:5px;">
-                    <select id="stars"><option>1</option><option>2</option><option>3</option><option>4</option><option value="5">5 (MAX)</option></select>
-                    <button onclick="submitRating('${selected.id}')" style="background:var(--terminal-green); color:#000; border:none; padding:5px 15px; font-weight:bold;">LOG</button>
+                <div class="poster-frame" style="background-image:url(${active.poster_url})"></div>
+                <h3 style="text-align:center">${active.title}</h3>
+                <p style="text-align:center; font-size:0.7rem">PICKED BY: ${active.picker}</p>
+                <div style="background:#222; padding:10px; border:1px solid var(--terminal-green);">
+                    <p style="font-size:0.6rem">LOG RATING (1-5):</p>
+                    <input type="number" id="stars" min="1" max="5" value="5">
+                    <button onclick="rate('${active.id}')" style="width:100%">LOG_DATA</button>
                 </div>
-                <button onclick="ejectMovie('${selected.id}')" style="margin-top:20px; width:100%; background:#333; color:white; border:none; padding:10px;">EJECT WEEKLY TAPE</button>
+                <button onclick="clearSystem()" style="width:100%; margin-top:10px; background:#444; color:white;">EJECT_WEEKLY_TAPE</button>
             `;
         } else {
-            // 2. Show Queue
-            const { data: queue } = await supabase.from('movies').select('*').eq('status', 'pending');
-            const count = queue ? queue.length : 0;
+            const pending = movies.filter(m => m.status === 'pending');
             target.innerHTML = `
-                <p style="text-align:center">> DATA_FILES_RECEIVED: ${count}/4</p>
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; margin:10px 0;">
-                    ${[0,1,2,3].map(i => `<div style="height:60px; border:2px dashed #444; background: ${queue && queue[i] ? 'var(--terminal-green)' : 'transparent'}"></div>`).join('')}
+                <p style="text-align:center">> UPLOADS_DETECTED: ${pending.length}/4</p>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; margin:15px 0;">
+                    ${[0,1,2,3].map(i => `<div style="height:40px; border:2px dashed #333; background:${pending[i] ? 'var(--terminal-green)' : 'transparent'}"></div>`).join('')}
                 </div>
-                ${count >= 4 ? `<button class="nav-btn" style="width:100%; background:var(--nasa-blue); color:white" onclick="spinWheel()">INITIATE RANDOM SELECTION</button>` : `<p style="font-size:0.6rem; text-align:center;">AWAITING ALL SIBLING UPLOADS...</p>`}
+                ${pending.length >= 4 ? `<button onclick="spin()" style="width:100%; background:var(--nasa-blue); color:white">INITIATE_RANDOM_SELECTION</button>` : ''}
             `;
         }
     }
 
+    // 4. ACTION FUNCTIONS
     async function uploadMovie() {
         const title = document.getElementById('m-title').value;
         const picker = document.getElementById('m-picker').value;
         const file = document.getElementById('m-img').files[0];
 
-        if(!title || !file) return alert("MISSING DATA");
+        if(!title || !file) return alert("INPUT ERROR");
 
-        const path = `posters/${Date.now()}_${file.name}`;
-        await supabase.storage.from('posters').upload(path, file);
-        const url = SB_URL + "/storage/v1/object/public/posters/" + path;
+        const path = `posters/${Date.now()}.png`;
+        const { data, error } = await supabase.storage.from('posters').upload(path, file);
+        
+        if(error) return alert("UPLOAD FAILED: " + error.message);
 
-        await supabase.from('movies').insert([{ title, picker, poster_url: url }]);
-        alert("TRANSMISSION RECEIVED");
-        showScreen('screen-theater');
+        const url = `${SB_URL}/storage/v1/object/public/posters/${path}`;
+        await supabase.from('movies').insert([{ title, picker, poster_url: url, status: 'pending' }]);
+        
+        alert("TRANSMISSION SUCCESS");
+        go('pg-theater');
     }
 
-    async function spinWheel() {
+    async function spin() {
         const { data } = await supabase.from('movies').select('*').eq('status', 'pending');
         const winner = data[Math.floor(Math.random() * data.length)];
         await supabase.from('movies').update({ status: 'selected' }).eq('id', winner.id);
-        loadWeekData();
+        refresh();
     }
 
-    async function submitRating(movieId) {
-        const stars = document.getElementById('stars').value;
-        await supabase.from('ratings').insert([{ movie_id: movieId, stars: parseInt(stars) }]);
-        alert("RATING STORED IN ARCHIVE");
+    async function rate(mid) {
+        const s = document.getElementById('stars').value;
+        await supabase.from('ratings').insert([{ movie_id: mid, stars: s }]);
+        alert("RATING LOGGED");
     }
 
-    async function ejectMovie(id) {
-        if(confirm("END CURRENT MISSION AND CLEAR QUEUE?")) {
-            await supabase.from('movies').delete().neq('id', '00000000-0000-0000-0000-000000000000'); // Clears all
-            loadWeekData();
+    async function clearSystem() {
+        if(confirm("CONFIRM DATA PURGE?")) {
+            await supabase.from('movies').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            refresh();
         }
     }
 
-    // AUTO-START
-    loadWeekData();
+    // INITIAL BOOT
+    refresh();
 </script>
-
 </body>
 </html>
