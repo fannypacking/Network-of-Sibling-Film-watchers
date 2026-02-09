@@ -2,262 +2,194 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NSFW // SIBLING_V7</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA // SIBLING_FILM_LINK</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --neon-pink: #ff00ff; --neon-cyan: #00ffff;
-            --vhs-beige: #d8cfbc; --tape-black: #121212;
+            --nasa-red: #fc3d21;
+            --nasa-blue: #0b3d91;
+            --terminal-green: #00ff41;
+            --analog-grey: #c0c0c0;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
         body {
-            background: #000; color: var(--neon-cyan);
-            font-family: 'Courier New', monospace; margin: 0; padding: 0;
-            display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+            background-color: #000;
+            color: var(--terminal-green);
+            font-family: 'Courier New', monospace;
+            margin: 0; padding: 10px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* Essential for click-through */
-        .scanlines {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        /* CRT EFFECT */
+        body::before {
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-            background-size: 100% 3px; z-index: 9999; pointer-events: none; opacity: 0.3;
+            background-size: 100% 4px; z-index: 999; pointer-events: none;
         }
 
-        .console-outer {
-            flex: 1; margin: 10px; border: 8px solid var(--vhs-beige);
-            background: #1a1a1a; display: flex; flex-direction: column;
-            overflow-y: auto; padding: 15px; border-radius: 4px;
-            position: relative; z-index: 5;
+        .terminal {
+            width: 100%; max-width: 450px;
+            border: 4px solid var(--analog-grey);
+            background: #111; padding: 15px;
+            box-shadow: inset 0 0 20px #000, 0 0 15px var(--nasa-blue);
         }
 
-        /* NAVIGATION - High Z-Index to stay on top */
-        .vcr-controls {
-            display: flex; background: #222; border-top: 5px solid var(--vhs-beige);
-            padding: 10px; gap: 10px; z-index: 1000; height: 80px;
+        .header { text-align: center; border-bottom: 2px solid var(--nasa-red); margin-bottom: 20px; }
+        .header h1 { font-size: 1.2rem; margin: 5px; letter-spacing: 2px; }
+
+        /* NAV BUTTONS */
+        .nav-deck { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .nav-btn {
+            background: var(--analog-grey); color: #000; border: 3px outset #fff;
+            padding: 10px; font-weight: bold; cursor: pointer; text-align: center;
+        }
+        .nav-btn:active { border-style: inset; background: #999; }
+
+        /* BOX ART */
+        .poster-frame {
+            width: 160px; height: 230px; border: 3px double var(--terminal-green);
+            margin: 15px auto; background-size: cover; background-position: center;
         }
 
-        .vcr-btn {
-            flex: 1; background: #333; border: 4px outset #555;
-            color: var(--vhs-beige); font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            text-align: center; font-size: 0.7rem; transition: all 0.1s;
+        .input-group { margin-bottom: 15px; }
+        input, select { 
+            width: 100%; background: #000; color: var(--terminal-green); 
+            border: 1px solid var(--terminal-green); padding: 8px; font-family: inherit;
         }
 
-        .vcr-btn:active { border-style: inset; background: #111; }
-        .vcr-btn.active { 
-            border-color: var(--neon-cyan); 
-            background: #000;
-            color: var(--neon-cyan);
-            box-shadow: 0 0 10px var(--neon-cyan); 
-        }
-
-        .content-area { padding-bottom: 20px; }
-        .hidden { display: none !important; }
-
-        /* Typography & Forms */
-        h1 { color: var(--neon-pink); font-size: 1rem; text-align: center; text-transform: uppercase; }
-        .btn-action {
-            background: var(--neon-pink); color: white; border: none;
-            padding: 15px; width: 100%; font-weight: bold; cursor: pointer;
-            margin: 10px 0; font-family: 'Courier New';
-        }
-
-        input, select {
-            width: 100%; background: #000; color: var(--neon-cyan);
-            border: 1px solid var(--neon-cyan); padding: 12px; margin: 8px 0;
-            font-size: 16px; /* Prevents iOS zoom-in on focus */
-        }
-        
-        .poster-box { width: 140px; height: 200px; border: 2px solid var(--neon-cyan); margin: 10px auto; background-size: cover; }
-        video { width: 100%; border: 1px solid var(--neon-pink); background: #000; }
+        .hidden { display: none; }
+        .loading-shimmer { animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-<div class="scanlines"></div>
+<div class="terminal">
+    <div class="header">
+        <h1>NSFW // MISSION_CONTROL</h1>
+        <p style="font-size: 0.6rem; color: var(--nasa-red);">STATION ID: SIBLING_LINK_4</p>
+    </div>
 
-<div class="console-outer">
-    <div class="content-area">
-        
-        <div id="view-theater">
-            <h1>● THEATER_MODE</h1>
-            <div id="theater-target">Initializing...</div>
+    <div id="screen-theater">
+        <div id="theater-data">
+            <p class="loading-shimmer">CONNECTING TO SATELLITE...</p>
         </div>
+    </div>
 
-        <div id="view-upload" class="hidden">
-            <h1>● RECORD_MODE</h1>
-            <input type="text" id="up-title" placeholder="FILM_TITLE">
-            <input type="text" id="up-name" placeholder="YOUR_NAME">
-            <p style="font-size:0.7rem">BOX ART (IMAGE):</p>
-            <input type="file" id="up-img" accept="image/*">
-            <p style="font-size:0.7rem">PITCH VIDEO:</p>
-            <input type="file" id="up-vid" accept="video/*">
-            <button class="btn-action" onclick="uploadMovie()">SAVE TO TAPE</button>
+    <div id="screen-submit" class="hidden">
+        <h2 style="font-size: 0.9rem;">> INITIALIZE_TAPE_LOAD</h2>
+        <div class="input-group">
+            <label>FILM TITLE:</label>
+            <input type="text" id="m-title">
         </div>
-
-        <div id="view-vault" class="hidden">
-            <h1>● DATA_VAULT</h1>
-            <div id="vault-target" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"></div>
-            <div id="dossier-target" style="margin-top:20px;"></div>
+        <div class="input-group">
+            <label>SIBLING ID:</label>
+            <select id="m-picker">
+                <option value="Sibling 1">SIBLING 1</option>
+                <option value="Sibling 2">SIBLING 2</option>
+                <option value="Sibling 3">SIBLING 3</option>
+                <option value="Sibling 4">SIBLING 4</option>
+            </select>
         </div>
+        <div class="input-group">
+            <label>BOX ART (PHOTO):</label>
+            <input type="file" id="m-img" accept="image/*">
+        </div>
+        <button class="nav-btn" style="width:100%; background:var(--nasa-red); color:white;" onclick="uploadMovie()">LOCK IN DATA</button>
+    </div>
 
+    <div class="nav-deck">
+        <div class="nav-btn" onclick="showScreen('screen-theater')">VIEW<br>COMMMS</div>
+        <div class="nav-btn" onclick="showScreen('screen-submit')">LOAD<br>DATA</div>
     </div>
 </div>
 
-<div class="vcr-controls">
-    <button id="btn-theater" class="vcr-btn active" onclick="nav('view-theater')">THEATER<br>[PLAY]</button>
-    <button id="btn-upload" class="vcr-btn" onclick="nav('view-upload')">UPLOAD<br>[REC]</button>
-    <button id="btn-vault" class="vcr-btn" onclick="nav('view-vault')">VAULT<br>[SEARCH]</button>
-</div>
-
 <script>
-    // Corrected Supabase Initialization
     const SB_URL = "https://vzwcarzsrbgrjrqoflbh.supabase.co";
     const SB_KEY = "sb_publishable_KY4Pldcx5bnPKuOgLWg3wA_7IiGzChd";
-    const supabase = typeof supabase !== 'undefined' ? supabase : window.supabase.createClient(SB_URL, SB_KEY);
+    const supabase = window.supabase.createClient(SB_URL, SB_KEY);
 
-    // NAVIGATION SYSTEM
-    function nav(targetId) {
-        console.log("Navigating to:", targetId);
-        
-        // 1. Hide all views
-        const views = ['view-theater', 'view-upload', 'view-vault'];
-        views.forEach(id => {
-            document.getElementById(id).classList.add('hidden');
-        });
-
-        // 2. Show target
-        document.getElementById(targetId).classList.remove('hidden');
-
-        // 3. Update Buttons
-        document.querySelectorAll('.vcr-btn').forEach(b => b.classList.remove('active'));
-        const btnId = 'btn-' + targetId.split('-')[1];
-        document.getElementById(btnId).classList.add('active');
-
-        // 4. Trigger Data Loads
-        if(targetId === 'view-theater') refreshTheater();
-        if(targetId === 'view-vault') loadVault();
+    function showScreen(id) {
+        document.getElementById('screen-theater').classList.add('hidden');
+        document.getElementById('screen-submit').classList.add('hidden');
+        document.getElementById(id).classList.remove('hidden');
+        if(id === 'screen-theater') loadWeekData();
     }
 
-    // THEATER ENGINE
-    async function refreshTheater() {
-        const target = document.getElementById('theater-target');
-        try {
-            const { data, error } = await supabase.from('movies').select('*').eq('status', 'showing');
-            const active = data && data.length > 0 ? data[0] : null;
+    async function loadWeekData() {
+        const target = document.getElementById('theater-data');
+        
+        // 1. Check for selected movie
+        const { data: selected } = await supabase.from('movies').select('*').eq('status', 'selected').single();
 
-            if (active) {
-                target.innerHTML = `
-                    <div class="poster-box" style="background-image:url(${active.poster_url})"></div>
-                    <h2 style="text-align:center">${active.title}</h2>
-                    <video src="${active.intro_url}" controls></video>
-                    <div style="background:#111; padding:10px; border:1px solid #444; margin-top:15px;">
-                        <p style="font-size:0.6rem">SUBMIT REACTION:</p>
-                        <input type="text" id="r-name" placeholder="NAME">
-                        <select id="r-stars"><option value="5">⭐⭐⭐⭐⭐</option><option value="4">⭐⭐⭐⭐</option><option value="3">⭐⭐⭐</option><option value="2">⭐⭐</option><option value="1">⭐</option></select>
-                        <input type="file" id="r-vid" accept="video/*">
-                        <button class="btn-action" onclick="submitReview('${active.id}')">LOG REVIEW</button>
-                    </div>
-                    <button class="btn-action" style="background:#444" onclick="archiveMovie('${active.id}')">EJECT / ARCHIVE</button>
-                `;
-            } else {
-                const { data: queue } = await supabase.from('movies').select('*').eq('status', 'pending');
-                target.innerHTML = `
-                    <p style="text-align:center">TAPES IN QUEUE: ${queue ? queue.length : 0}</p>
-                    ${queue ? queue.map(m => `<div style="background:#222; padding:8px; margin:5px 0; border-left:4px solid var(--neon-pink)">${m.title}</div>`).join('') : ''}
-                    <button class="btn-action" onclick="spin()">SPIN FOR TAPE</button>
-                `;
-            }
-        } catch (err) {
-            console.error(err);
-            target.innerHTML = "SYSTEM ERROR. CHECK CONSOLE.";
+        if (selected) {
+            target.innerHTML = `
+                <p style="text-align:center; color:var(--nasa-red)">CURRENT MISSION:</p>
+                <div class="poster-frame" style="background-image:url(${selected.poster_url})"></div>
+                <h2 style="text-align:center">${selected.title}</h2>
+                <p style="text-align:center; font-size:0.7rem">PICKED BY: ${selected.picker}</p>
+                <hr border="1">
+                <p style="font-size:0.7rem">LOG SIBLING RATING (1-5):</p>
+                <div style="display:flex; gap:5px;">
+                    <select id="stars"><option>1</option><option>2</option><option>3</option><option>4</option><option value="5">5 (MAX)</option></select>
+                    <button onclick="submitRating('${selected.id}')" style="background:var(--terminal-green); color:#000; border:none; padding:5px 15px; font-weight:bold;">LOG</button>
+                </div>
+                <button onclick="ejectMovie('${selected.id}')" style="margin-top:20px; width:100%; background:#333; color:white; border:none; padding:10px;">EJECT WEEKLY TAPE</button>
+            `;
+        } else {
+            // 2. Show Queue
+            const { data: queue } = await supabase.from('movies').select('*').eq('status', 'pending');
+            const count = queue ? queue.length : 0;
+            target.innerHTML = `
+                <p style="text-align:center">> DATA_FILES_RECEIVED: ${count}/4</p>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px; margin:10px 0;">
+                    ${[0,1,2,3].map(i => `<div style="height:60px; border:2px dashed #444; background: ${queue && queue[i] ? 'var(--terminal-green)' : 'transparent'}"></div>`).join('')}
+                </div>
+                ${count >= 4 ? `<button class="nav-btn" style="width:100%; background:var(--nasa-blue); color:white" onclick="spinWheel()">INITIATE RANDOM SELECTION</button>` : `<p style="font-size:0.6rem; text-align:center;">AWAITING ALL SIBLING UPLOADS...</p>`}
+            `;
         }
     }
 
-    async function spin() {
-        const { data } = await supabase.from('movies').select('*').eq('status', 'pending');
-        if(!data || data.length === 0) return alert("QUEUE EMPTY");
-        const winner = data[Math.floor(Math.random() * data.length)];
-        await supabase.from('movies').update({ status: 'showing' }).eq('id', winner.id);
-        refreshTheater();
-    }
-
     async function uploadMovie() {
-        const title = document.getElementById('up-title').value;
-        const name = document.getElementById('up-name').value;
-        const img = document.getElementById('up-img').files[0];
-        const vid = document.getElementById('up-vid').files[0];
+        const title = document.getElementById('m-title').value;
+        const picker = document.getElementById('m-picker').value;
+        const file = document.getElementById('m-img').files[0];
 
-        if(!title || !img || !vid) return alert("MISSING FIELDS");
+        if(!title || !file) return alert("MISSING DATA");
 
-        const iPath = `posters/${Date.now()}`;
-        const vPath = `intros/${Date.now()}`;
-        
-        await supabase.storage.from('posters').upload(iPath, img);
-        await supabase.storage.from('intros').upload(vPath, vid);
+        const path = `posters/${Date.now()}_${file.name}`;
+        await supabase.storage.from('posters').upload(path, file);
+        const url = SB_URL + "/storage/v1/object/public/posters/" + path;
 
-        await supabase.from('movies').insert([{ 
-            title, submitter: name, 
-            poster_url: `${SB_URL}/storage/v1/object/public/posters/${iPath}`,
-            intro_url: `${SB_URL}/storage/v1/object/public/intros/${vPath}` 
-        }]);
-        nav('view-theater');
+        await supabase.from('movies').insert([{ title, picker, poster_url: url }]);
+        alert("TRANSMISSION RECEIVED");
+        showScreen('screen-theater');
     }
 
-    async function submitReview(movieId) {
-        const name = document.getElementById('r-name').value;
-        const stars = document.getElementById('r-stars').value;
-        const vid = document.getElementById('r-vid').files[0];
-        
-        const path = `reviews/${Date.now()}`;
-        await supabase.storage.from('reviews').upload(path, vid);
-        
-        await supabase.from('reviews').insert([{
-            movie_id: movieId, reviewer_name: name, rating: stars,
-            video_url: `${SB_URL}/storage/v1/object/public/reviews/${path}`
-        }]);
-        alert("LOGGED");
-        refreshTheater();
+    async function spinWheel() {
+        const { data } = await supabase.from('movies').select('*').eq('status', 'pending');
+        const winner = data[Math.floor(Math.random() * data.length)];
+        await supabase.from('movies').update({ status: 'selected' }).eq('id', winner.id);
+        loadWeekData();
     }
 
-    async function archiveMovie(id) {
-        await supabase.from('movies').update({ status: 'archived' }).eq('id', id);
-        nav('view-vault');
+    async function submitRating(movieId) {
+        const stars = document.getElementById('stars').value;
+        await supabase.from('ratings').insert([{ movie_id: movieId, stars: parseInt(stars) }]);
+        alert("RATING STORED IN ARCHIVE");
     }
 
-    async function loadVault() {
-        const { data } = await supabase.from('movies').select('*').eq('status', 'archived');
-        document.getElementById('vault-target').innerHTML = data ? data.map(m => `
-            <div onclick="showDossier('${m.id}')" style="background:#222; padding:5px; border:1px solid #444; text-align:center">
-                <div style="height:100px; background:url(${m.poster_url}); background-size:cover; background-position:center;"></div>
-                <p style="font-size:0.5rem; overflow:hidden; white-space:nowrap;">${m.title}</p>
-            </div>
-        `).join('') : 'VAULT EMPTY';
+    async function ejectMovie(id) {
+        if(confirm("END CURRENT MISSION AND CLEAR QUEUE?")) {
+            await supabase.from('movies').delete().neq('id', '00000000-0000-0000-0000-000000000000'); // Clears all
+            loadWeekData();
+        }
     }
 
-    async function showDossier(id) {
-        const { data: m } = await supabase.from('movies').select('*').eq('id', id).single();
-        const { data: r } = await supabase.from('reviews').select('*').eq('movie_id', id);
-        document.getElementById('dossier-target').innerHTML = `
-            <div style="background:#000; border:1px solid var(--neon-cyan); padding:10px; margin-top:10px;">
-                <h3>${m.title}</h3>
-                <video src="${m.intro_url}" controls></video>
-                <div style="margin-top:10px">${r.map(rev => `
-                    <div style="border-top:1px solid #333; padding:5px">
-                        <p style="font-size:0.7rem">${rev.reviewer_name} - ${"⭐".repeat(rev.rating)}</p>
-                        <video src="${rev.video_url}" controls></video>
-                    </div>
-                `).join('')}</div>
-                <button class="btn-action" onclick="document.getElementById('dossier-target').innerHTML=''">CLOSE</button>
-            </div>
-        `;
-    }
-
-    // ON LOAD
-    window.onload = refreshTheater;
+    // AUTO-START
+    loadWeekData();
 </script>
+
 </body>
 </html>
